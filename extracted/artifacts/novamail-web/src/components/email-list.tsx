@@ -325,7 +325,7 @@ export function EmailList({
   };
 
   return (
-    <div className="novamail-smart-inbox novamail-dense-inbox novamail-global-list flex h-full w-full flex-col border-r border-border bg-background">
+    <div className="novamail-smart-inbox novamail-dense-inbox novamail-global-list flex min-h-0 flex-1 w-full flex-col border-r border-border bg-background">
       <div className="sticky top-0 z-10 border-b border-border bg-card/50 p-3 backdrop-blur supports-[backdrop-filter]:bg-card/50">
         <div className="relative">
           <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

@@ -6633,3 +6633,35 @@ body,
     max-width: 7rem;
   }
 }
+
+/* Mobile email-list scroll fix.
+   On phones the filter header (search + smart sections + category tabs) is
+   taller than the remaining panel space, which squashes the ScrollArea to
+   0px.  Make the EmailList root the scroll container instead: the filter
+   header stays sticky at the top while the email rows scroll beneath it.
+   The email rows already carry pb-28 for bottom-nav clearance, so the
+   container-level padding-bottom from earlier rules is redundant. */
+@media (max-width: 767px) {
+  .novamail-global-list {
+    padding-bottom: 0;
+    overflow-y: auto;
+  }
+
+  /* The filter header is taller than the remaining panel space on phones.
+     Let it scroll with the content instead of sticking and covering emails. */
+  .novamail-global-list > div.sticky {
+    position: relative;
+  }
+
+  /* Let the ScrollArea expand to its natural content height instead of
+     being squashed to 0px by flex-1. */
+  .novamail-global-list > .sticky ~ div {
+    flex: none;
+    overflow: visible;
+  }
+
+  .novamail-global-list [data-radix-scroll-area-viewport] {
+    overflow: visible;
+    height: auto;
+  }
+}
