@@ -446,7 +446,7 @@ export function EmailList({
 
                     <span
                       className={cn(
-                        "novamail-email-sender truncate text-sm",
+                        "novamail-email-sender min-w-0 truncate text-sm",
                         !email.isRead
                           ? "font-bold text-foreground"
                           : "font-medium text-foreground/80",
@@ -475,7 +475,7 @@ export function EmailList({
                 <div className="mt-0.5 flex w-full items-center justify-between gap-4">
                   <span
                     className={cn(
-                      "novamail-email-subject truncate text-sm",
+                      "novamail-email-subject min-w-0 truncate text-sm",
                       !email.isRead ? "font-semibold text-foreground" : "text-foreground/70",
                     )}
                   >
