@@ -809,10 +809,11 @@ export function EmailDetail({ email, onReply, onReplyAll, onForward, onClose, cu
     }
   };
 
-  const handleCreateFollowUp = async () => {
-    if (!followUpReminder) return;
+  const handleCreateFollowUp = async (overrideReminder?: string) => {
+    const when = overrideReminder ?? followUpReminder;
+    if (!when) return;
     try {
-      await createFollowUp({ emailId: email.id, remindAt: new Date(followUpReminder).toISOString(), waitingForReply: true });
+      await createFollowUp({ emailId: email.id, remindAt: new Date(when).toISOString(), waitingForReply: true });
       toast({ title: t("email.followUpCreated") });
       setFollowUpReminder("");
     } catch (error) {
@@ -820,10 +821,11 @@ export function EmailDetail({ email, onReply, onReplyAll, onForward, onClose, cu
     }
   };
 
-  const handleSnooze = async () => {
-    if (!snoozeUntil) return;
+  const handleSnooze = async (overrideUntil?: string) => {
+    const when = overrideUntil ?? snoozeUntil;
+    if (!when) return;
     try {
-      await snoozeEmail(email.id, new Date(snoozeUntil).toISOString());
+      await snoozeEmail(email.id, new Date(when).toISOString());
       toast({ title: "Email snoozed" });
       await queryClient.invalidateQueries({ queryKey: getListEmailsQueryKey() });
       onClose?.();
@@ -994,6 +996,8 @@ export function EmailDetail({ email, onReply, onReplyAll, onForward, onClose, cu
             )}
           </Button>
 
+          {/* Secondary/AI actions: visible on desktop/tablet, hidden on mobile (moved to More menu) */}
+          <div className="hidden md:flex items-center gap-1">
           <div className="flex items-center gap-1">
             <select value={summaryMode} onChange={(event) => setSummaryMode(event.target.value as SummaryMode)} aria-label={t("email.summaryMode")} className="h-8 rounded-md border bg-background px-2 text-xs">
               <option value="short">{t("email.shortSummary")}</option>
@@ -1017,6 +1021,7 @@ export function EmailDetail({ email, onReply, onReplyAll, onForward, onClose, cu
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={openTaskForm} disabled={productivityBusy} title={t("email.createTask")}><ListTodo className="me-1 h-4 w-4" />{t("email.createTask")}</Button>
           <Button type="button" variant="ghost" size="sm" onClick={() => void openEventForm()} disabled={productivityBusy} title={t("email.createEvent")}><CalendarDays className="me-1 h-4 w-4" />{productivityBusy ? <Loader2 className="me-1 h-4 w-4 animate-spin" /> : null}{t("email.createEvent")}</Button>
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
@@ -1077,6 +1082,35 @@ export function EmailDetail({ email, onReply, onReplyAll, onForward, onClose, cu
               <DropdownMenuItem>
                 <Printer className="mr-2 h-4 w-4" />
                 {t("email.print")}
+              </DropdownMenuItem>
+
+              {/* Mobile-only: secondary/AI actions moved here from the toolbar */}
+              <DropdownMenuItem className="md:hidden" onClick={() => void handleSummarize()} disabled={aiBusy}>
+                <Sparkles className="mr-2 h-4 w-4" />
+                {t("email.smartSummary")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={() => void handleCategorize()} disabled={aiBusy}>
+                {t("email.categoryAction")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={() => void handleLoadActions()} disabled={actionsBusy}>
+                <ListTodo className="mr-2 h-4 w-4" />
+                {t("email.actionCenter")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={() => { const dt = window.prompt(t("email.snoozeUntil")); if (dt) void handleSnooze(dt); }}>
+                <Clock3 className="mr-2 h-4 w-4" />
+                {t("email.snoozeEmail")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={() => { const dt = window.prompt(t("email.followUpReminder")); if (dt) void handleCreateFollowUp(dt); }}>
+                <Clock3 className="mr-2 h-4 w-4" />
+                {t("email.followUpReminder")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={openTaskForm} disabled={productivityBusy}>
+                <ListTodo className="mr-2 h-4 w-4" />
+                {t("email.createTask")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="md:hidden" onClick={() => void openEventForm()} disabled={productivityBusy}>
+                <CalendarDays className="mr-2 h-4 w-4" />
+                {t("email.createEvent")}
               </DropdownMenuItem>
 
               {isTrash ? (

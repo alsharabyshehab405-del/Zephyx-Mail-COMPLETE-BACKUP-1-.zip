@@ -6665,3 +6665,17 @@ body,
     height: auto;
   }
 }
+
+/* Mobile reader toolbar: prevent horizontal overflow / button overlap.
+   Primary icon buttons wrap naturally; secondary actions are in the More menu. */
+@media (max-width: 767px) {
+  .novamail-global-reader .email-detail-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .novamail-global-reader .email-detail-toolbar > div:first-child {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+}
